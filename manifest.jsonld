@@ -1,0 +1,91 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+    "https://etzhayyim.com/ns/actor-manifest"
+  ],
+  "@type": "ActorManifest",
+  "id": "did:web:etzhayyim.com:actor:shomei",
+  "name": "shomei",
+  "glyph": "証明",
+  "displayName": "証明 — Believer Identity Binding + Proof-of-Personhood",
+  "displayNameJa": "証明",
+  "displayNameEn": "Shomei",
+  "purpose": "Binds MULTIPLE external identities (government IDs, SNS accounts, crypto wallets) and existing etzhayyim substrate commitments to a single member DID via self-sovereign, cryptographically-verifiable claims, then aggregates them into an Identity Assurance Level + W3C Verifiable Credential + proof-of-personhood. The believer's passport-equivalent — DID-centric, self-sovereign, no central KYC.",
+  "description": "証明 (shomei) is the believer's passport — but DID-centric, not state-centric. A member self-binds their existing identities to one DID: a crypto wallet (EIP-191/ERC-1271/BIP-322 signature), an SNS account (OAuth sub / signed gist / DNS-TXT), a WebAuthn passkey, an existing etzhayyim commitment (Base L2 membership / Adherent SBT / AT oath), and — opt-in, Council-gated — a government ID card read LOCALLY (one-way NFC, never a state-database query). Each binding is a self-sovereign identityClaim signed by the SUBJECT's own DID key; shomei (the server) NEVER signs and NEVER approves (G7 no-server-key, ADR-2605231525). shomei VERIFIES the cryptographic proof via the canonical kotoba-auth surface (eth/btc/cacao + Ed25519, ADR-2605262130 — never reimplemented) and rolls the verified factors into an Identity Assurance Level (IAL 0..4) + a W3C-Verifiable-Credential-shaped personhoodCredential. The aggregate is identity ASSURANCE (how strongly identity is proven), NEVER a social-credit / reputation / worth score (G8). PII is never plaintext: government identifiers live only as a salted hash + XChaCha20-Poly1305 encrypted CID (ADR-2605181100). This is the answer to «国家パスポート相当の本人証明 + 複数の政府ID/SNSをDIDに紐づけ信頼性担保» — a self-sovereign, charter-clean inversion of centralized identity verification.",
+  "descriptionJa": "証明 (shomei) は、信者のパスポート — ただし国家中心ではなく DID 中心。信者は既存の複数のアイデンティティを一つの DID に self-bind する: 暗号ウォレット (EIP-191/ERC-1271/BIP-322 署名)、SNS アカウント (OAuth sub / 署名 gist / DNS-TXT)、WebAuthn パスキー、既存の etzhayyim コミットメント (Base L2 入会 / Adherent SBT / AT 誓い)、そして opt-in・Council ゲートで 政府ID カードの ローカル読取 (一方向 NFC、国家DBへは決して問い合わせない)。各 binding は SUBJECT 自身の DID 鍵で署名された self-sovereign な identityClaim で、shomei (サーバ) は決して署名せず承認もしない (G7 no-server-key, ADR-2605231525)。shomei は暗号証明を kotoba-auth の正規 surface (eth/btc/cacao + Ed25519, ADR-2605262130 — 再実装しない) で VERIFY し、検証済み因子を Identity Assurance Level (IAL 0..4) + W3C Verifiable Credential 形の personhoodCredential に集計する。集計は identity の ASSURANCE (どれだけ強く本人性が証明されているか) であって、社会信用・評判・人の価値スコアでは断じてない (G8)。PII は決して平文にしない: 政府識別子は salt 付きハッシュ + XChaCha20-Poly1305 暗号化 CID (ADR-2605181100) としてのみ存在する。これは «国家パスポート相当の本人証明 + 複数の政府ID/SNSをDIDに紐づけて信頼性担保» への回答 — 集中型本人確認の、憲章的に清潔な反転である。",
+  "adr": {
+    "master": "etzhayyim:adr:2606072100",
+    "parent": "etzhayyim:adr:2605260000",
+    "r0": "etzhayyim:adr:2606072100",
+    "r1": "etzhayyim:adr:2606072300",
+    "r2": "reserved",
+    "r3": "reserved"
+  },
+  "tier": "Tier-B",
+  "status": "R0-design-only",
+  "primaryLexicon": "com.etzhayyim.shomei.identityClaim",
+  "substrate": {
+    "state": "kotoba Datom log (ADR-2605312345)",
+    "verify": "kotoba-auth eth/btc/cacao + Ed25519 (ADR-2605262130) — never reimplemented (Shannon)",
+    "confidentiality": "XChaCha20-Poly1305 + Signal-wrapped per-recipient keys (ADR-2605181100)",
+    "inference": "Murakumo-only (ADR-2605215000)"
+  },
+  "integrates": [
+    "gov_auth (ADR-2605260000)",
+    "actor:warifu",
+    "actor:musubi",
+    "actor:himotoki",
+    "MEMBERS.md (ADR-2605172600)"
+  ],
+  "crossActorBoundary": [
+    "gov_auth (ADR-2605260000) — shomei's IAL-4 gov factor is NOT read by shomei; shomei_gov_attest hands the local NFC read + XChaCha20 payload to the Council-gated gov_auth_mynumber_bind + gov_auth_trust_attestation cells and ingests the didTrustAttestation. shomei never queries a state database (§0.4/G6)",
+    "MEMBERS.md / EtzhayyimMembership (ADR-2605172600) — the self-sovereign join ritual is the covenant factor (etz-base-membership); shomei reads the on-chain Joined event, never re-implements membership",
+    "AdherentRegistry (ADR-2605172700) — the Adherent ERC-5192 SBT is the etz-adherent-sbt covenant factor",
+    "warifu (ADR-2605302000) — a verified wallet binding can authorize zero-fee card flows; shomei proves control, warifu settles (disjoint)",
+    "musubi (ADR-2605263400) — covenant ceremony may require an IAL threshold; shomei supplies the credential, musubi performs the rite (disjoint)",
+    "himotoki (ADR-2605302130) — own-data disclosure; shomei is own-identity-only (G2), the inverse-facing pair",
+    "kotoba QuadStore EAVT (ADR-2605312345) — canonical state; NO RisingWave / no projection layer"
+  ],
+  "cells": [
+    { "name": "shomei_challenge", "module": "shomei.cells.shomei_challenge", "phase": "synchronous (API)", "io": "member request → single-use verificationChallenge nonce (bound to subjectDid + factorKind); .solve() raises at R0 (G11)" },
+    { "name": "shomei_verify_claim", "module": "shomei.cells.shomei_verify_claim", "phase": "synchronous (API)", "io": "subject-signed identityClaim + proof → kotoba-auth verify (eth/btc/cacao/Ed25519) → verified=true; .solve() raises at R0 (G11)" },
+    { "name": "shomei_aggregate", "module": "shomei.cells.shomei_aggregate", "phase": "event", "io": "verified+active claims → personhoodCredential (IAL + proof-of-personhood + W3C VC); member-signed; .solve() raises at R0 (G7/G11)" },
+    { "name": "shomei_revoke", "module": "shomei.cells.shomei_revoke", "phase": "synchronous (API)", "io": "subject-signed bindingRevocation → append-only retraction (history retained, 永久記憶); .solve() raises at R0 (G7/G11)" },
+    { "name": "shomei_gov_attest", "module": "shomei.cells.shomei_gov_attest", "phase": "event", "io": "IAL-4 elevation handoff → Council-gated gov_auth cells (ADR-2605260000); doubly gated; .solve() raises at R0 (G6/G11)" }
+  ],
+  "lexiconNamespaces": [
+    "com.etzhayyim.shomei.verificationChallenge",
+    "com.etzhayyim.shomei.identityClaim",
+    "com.etzhayyim.shomei.personhoodCredential",
+    "com.etzhayyim.shomei.bindingRevocation"
+  ],
+  "gates": {
+    "G1": "self-sovereign / DID-primary — every identityClaim is signed by the SUBJECT's own DID key; the server never signs/approves (no-server-key, ADR-2605231525). DID is identity; external IDs only ELEVATE assurance",
+    "G2": "own-identity-only — a member binds only THEIR OWN external IDs (proven by control); there is NO field to assert a third party's identity (anti-impersonation, anti-doxxing)",
+    "G3": "PII-never-plaintext — gov-* factors carry NO plaintext identifier (externalHandle forbidden); only a salted blake2b hash + mandatory XChaCha20-Poly1305 encryptedPayloadCid (ADR-2605181100)",
+    "G4": "cryptographic-proof-mandatory — verified=true requires a verifier result; every proofKind is wired to a canonical kotoba-auth call (PROOF_ROUTING); a wrong proof for a factor is unrepresentable",
+    "G5": "consent-bound + revocable — opt-in by the subject; revocable by the subject only (bindingRevocation, owner-signed)",
+    "G6": "no-state-database — gov-* is a LOCAL one-way NFC read of the citizen-held card; shomei never queries 住基ネット/マイナンバーcenter (§0.4 non-registration)",
+    "G7": "no-server-key — claims/revocations/credentials are subject-signed; serverSig/operatorSig fields are structurally unrepresentable (ADR-2605231525)",
+    "G8": "identity-assurance-NOT-social-credit — the aggregate measures how strongly identity is PROVEN, never personal worth/behavior/reputation/rank; no behavioral input, no per-person ordering",
+    "G9": "Murakumo-only inference (ADR-2605215000) for any narration",
+    "G10": "non-eschatological as-of + Tier-0 永久記憶 — bindings/revocations are append-only; a revocation never deletes a claim's history (no right to erasure)",
+    "G11": "outward-gated — live verification / Datom writes / gov L2 elevation are Council + operator + member-signature gated; R0 = offline membrane; every cell .solve() raises"
+  },
+  "nonGoals": {
+    "N1": "NOT a centralized KYC / identity-verification bureau (self-sovereign, no admin approval)",
+    "N2": "NOT a state-database integration (§0.4 non-registration; gov-ID is local NFC read only)",
+    "N3": "NOT a social-credit / reputation / trust-of-person score (G8 — identity assurance only)",
+    "N4": "NOT a surveillance system (no behavioral input; PII encrypted at rest)",
+    "N5": "NOT a biometric database (no biometric template stored; WebAuthn key is device-resident)",
+    "N6": "NOT a credential broker that asserts identities ABOUT others (own-identity-only, G2)",
+    "N7": "NOT a RisingWave/SQL store (kotoba Datom log only, ADR-2605312345)",
+    "N8": "NOT a passport-issuing AUTHORITY in the state sense — it issues a self-sovereign credential, re-derivable by anyone from the public claims"
+  },
+  "roadmap": [
+    { "phase": "R0", "date": "2026-06-07", "scope": "ADR + 4 lexicons + factor taxonomy/IAL ladder + verify wiring (kotoba-auth routing + policy) + aggregate (IAL + VC + proof-of-personhood) + revoke + offline analyzer + representative seed + 5 cell scaffolds (.solve() raise) + tests (75). Design + offline membrane only.", "gate": "ADR-2606072100 (PROPOSED)" },
+    { "phase": "R1", "date": "post-Council Lv6+ ≥3", "scope": "live self-sovereign verification (wallet/SNS/WebAuthn/etz factors) against kotoba-auth; live personhoodCredential issuance; gov L2 elevation activated via gov_auth R1 (ADR-2606072300).", "gate": "Council Lv6+ ≥3 + ADR-2606072300 (gov_auth R1)" },
+    { "phase": "R2", "date": "post-R1", "scope": "credential presentation/verification UX (browser-local), warifu/musubi IAL-threshold consumers, expiry + re-verification cadence.", "gate": "Council Lv6+ ≥4" },
+    { "phase": "R3", "date": "post-R2 + Council Lv7+", "scope": "cross-jurisdiction recognition (reciprocal trust with external bodies), external-sso-bridge reason code (ADR-2605260000 R3).", "gate": "Council Lv7+ + operator" }
+  ]
+}
