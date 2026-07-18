@@ -1,0 +1,4 @@
+{:migration/id :shomei/standalone-cutover :status :complete
+ :source/root "20-actors/shomei" :target/repository "orgs/etzhayyim/com-etzhayyim-shomei"
+ :canonical/format :edn :wire/root "wire" :pruned #{:go :tinygo :shell :python-marker}
+ :root/cleanup ["20-actors/shomei" "00-contracts/lexicons/com/etzhayyim/shomei"]}

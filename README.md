@@ -30,7 +30,7 @@ no state-database query, PII never plaintext.
 proof-of-personhood = IAL ≥ 2 with ≥ 2 distinct classes (sybil-**resistance**, not sybil-proof).
 Two wallets of the same chain-class do not raise diversity — independence across classes does.
 
-## Lexicons (`00-contracts/lexicons/com/etzhayyim/shomei/`)
+## Lexicons (`wire/lexicons/`)
 
 - `verificationChallenge` — single-use, subject+factor-bound nonce (anti-replay)
 - `identityClaim` — one self-sovereign, subject-signed external-identity binding

@@ -5,7 +5,7 @@
   Loads the lexicon JSON via `shomei.methods.edn/parse-json` (string-keyed maps, same shape as
   `json.loads`). The lexicon dir is resolved *file*-relative behind #?(:clj) like
   kanae/test_pipeline.cljc: …/20-actors/shomei/methods/test_lexicons.cljc → up 4 = repo root →
-  00-contracts/lexicons/com/etzhayyim/shomei. The `__main__` demo (`run(\"lexicons\", CASES)`)
+  wire/lexicons. The `__main__` demo (`run(\"lexicons\", CASES)`)
   is omitted (clojure.test drives the suite)."
   (:require [clojure.test :refer [deftest is run-tests]]
             #?(:clj [clojure.java.io :as io])
@@ -15,8 +15,7 @@
 #?(:clj
    (def ^:private lex-dir
      ;; …/methods/test_lexicons.cljc → methods → shomei → 20-actors → root
-     (-> *file* io/file .getParentFile .getParentFile .getParentFile .getParentFile
-         (io/file "00-contracts" "lexicons" "com" "etzhayyim" "shomei"))))
+     (io/file "." "wire" "lexicons")))
 
 (defn- load-lex [name]
   #?(:clj (e/parse-json (slurp (io/file lex-dir (str name ".json"))))

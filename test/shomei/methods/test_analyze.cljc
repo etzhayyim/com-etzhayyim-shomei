@@ -14,7 +14,7 @@
             [shomei.methods.analyze :as a]
             #?(:clj [shomei.methods.edn :as e])))
 
-(def seed-path "20-actors/shomei/data/seed-claims.json")
+(def seed-path "wire/data/seed-claims.json")
 
 ;; ── helper: raises-with ─────────────────────────────────────────────────────────
 (defmacro raises-containing [substr & body]

@@ -1,0 +1,2 @@
+{:repository/id "com-etzhayyim-shomei" :actor/id "shomei"
+ :layout :west-flat-multirepo :canonical-format :edn :wire-formats #{:json :json-ld :bpmn}}
