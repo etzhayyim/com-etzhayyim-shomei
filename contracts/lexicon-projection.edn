@@ -1,0 +1,8 @@
+{:projection/canonical-root "contracts/lexicons"
+ :projection/wire-root "wire/contracts/lexicons"
+ :projection/source-format :edn
+ :projection/output-format :json
+ :projection/generator
+ {:repository "https://github.com/etzhayyim/com-etzhayyim-lexicons-bundle"
+  :revision "c78dfb9764c952b770d47553cd110768d6f7c336"
+  :path "scripts/project-edn-lexicons.clj"}}

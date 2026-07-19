@@ -1,0 +1,76 @@
+{
+  "lexicon" : 1,
+  "id" : "com.etzhayyim.shomei.identityClaim",
+  "description" : "A SELF-SOVEREIGN binding of ONE external identity (government ID, SNS account, crypto wallet, or an existing etzhayyim substrate commitment) to a member DID, signed by the SUBJECT's own DID key. Per ADR-2606072100 (shomei). This is the believer's passport-equivalent atom: a cryptographically-verifiable claim of control over an external identifier, recorded on the kotoba Datom log (ADR-2605312345). **G1 self-sovereign**: the subject signs; shomei (server) NEVER signs and NEVER approves (G7 no-server-key, ADR-2605231525). **G2 own-identity-only**: the proof MUST demonstrate the SUBJECT controls the external identifier; asserting someone else's identity is unrepresentable. **G3 PII-never-plaintext (CRITICAL)**: for any `gov-*` factorKind, `externalHandle` MUST be absent and `encryptedPayloadCid` (XChaCha20-Poly1305 per ADR-2605181100) MUST be present — plaintext government identifiers (MyNumber/passport/license numbers, name, DOB) NEVER appear on the substrate; only the salted hash + encrypted CID. **G4 cryptographic-proof-mandatory**: `verified=true` requires a successful verifier result against `proofKind` (see com.etzhayyim.shomei verify wiring → kotoba-auth eth/btc/cacao surfaces). **G6 no-state-database**: `gov-*` factors are read locally from the citizen-held card (one-way NFC read); shomei never queries a state database (§0.4 non-registration).",
+  "defs" : {
+    "main" : {
+      "type" : "record",
+      "key" : "tid",
+      "record" : {
+        "type" : "object",
+        "additionalProperties" : false,
+        "required" : [ "subjectDid", "factorKind", "factorClass", "proofKind", "challengeNonce", "externalSubjectHash", "verified", "issuedAt", "subjectSig" ],
+        "properties" : {
+          "externalSubjectHash" : {
+            "type" : "string",
+            "description" : "Blake2b-256 (base64url) of (per-subject salt || canonical external identifier). Privacy-preserving stable linkage that lets a verifier confirm two claims reference the same external identity WITHOUT publishing the raw identifier. For gov factors this is the ONLY on-substrate representation of the identifier.",
+            "maxLength" : 64
+          },
+          "subjectSig" : {
+            "type" : "string",
+            "description" : "Ed25519 signature (base64url) by the SUBJECT DID's signing key over the CBOR-canonical form of (subjectDid, factorKind, factorClass, proofKind, challengeNonce, externalSubjectHash, verified, issuedAt). G7 no-server-key: only the subject signs this record.",
+            "maxLength" : 256
+          },
+          "proofKind" : {
+            "type" : "string",
+            "enum" : [ "eip191", "eip1271", "bip322", "oauth-sub", "dns-txt", "signed-gist", "webauthn-assertion", "nfc-jpki", "base-l2-event", "erc5192-sbt", "at-record-sig" ],
+            "description" : "Proof mechanism. eip191/eip1271=EVM personal_sign / smart-wallet (kotoba-auth eth + cacao); bip322=Bitcoin signed message (kotoba-auth btc.verify_message); oauth-sub/dns-txt/signed-gist=SNS control; webauthn-assertion=platform authenticator (ADR-2605260000); nfc-jpki=local MyNumber/passport IC read (gov, Council-gated L2); base-l2-event/erc5192-sbt/at-record-sig=existing etzhayyim substrate commitments."
+          },
+          "factorClass" : {
+            "type" : "string",
+            "enum" : [ "device", "key", "social", "government", "covenant" ],
+            "description" : "Independence class of the factor. Used by personhoodCredential aggregation: assurance counts DISTINCT classes (an EVM + a BTC wallet are both `key` = one class), so sybil-resistance comes from class diversity, never from a per-person worth score (G8)."
+          },
+          "subjectDid" : {
+            "type" : "string",
+            "format" : "did",
+            "description" : "DID of the member binding the external identity. Must be `did:web:etzhayyim.com:actor:<h>`, `did:plc:*`, or `did:key:*`."
+          },
+          "challengeNonce" : {
+            "type" : "string",
+            "description" : "The `nonce` from the com.etzhayyim.shomei.verificationChallenge the subject signed over. Binds the proof to a fresh, single-use challenge (anti-replay).",
+            "maxLength" : 256
+          },
+          "verifierDid" : {
+            "type" : "string",
+            "format" : "did",
+            "description" : "OPTIONAL DID of the entity whose verifier produced the result. For self-sovereign factors this is the subject (self-verified, anyone can re-verify). For gov-class L2 it is the Council-delegated attestor (ADR-2605260000)."
+          },
+          "verified" : {
+            "type" : "boolean",
+            "description" : "True ONLY when a verifier successfully validated the proof against `proofKind` (G4). A claim with `verified=false` does NOT contribute to assurance aggregation. shomei never sets this true without a verifier result."
+          },
+          "encryptedPayloadCid" : {
+            "type" : "string",
+            "description" : "IPFS CID of the XChaCha20-Poly1305 ciphertext (per ADR-2605181100) of any sensitive proof material (parsed JPKI card response, X.509 chain, etc.). MANDATORY for every `gov-*` factor; the decrypt key is Signal-wrapped per-recipient (subject + Council delegate) as com.etzhayyim.encrypted.keyWrap records. The plaintext MUST NEVER appear on the substrate.",
+            "maxLength" : 128
+          },
+          "factorKind" : {
+            "type" : "string",
+            "enum" : [ "webauthn", "wallet-evm", "wallet-btc", "sns-github", "sns-x", "sns-google", "sns-apple", "gov-mynumber", "gov-passport", "gov-license", "etz-base-membership", "etz-adherent-sbt", "etz-at-oath" ],
+            "description" : "The external identity factor being bound."
+          },
+          "issuedAt" : {
+            "type" : "integer",
+            "description" : "Unix timestamp (seconds) when the claim was created."
+          },
+          "externalHandle" : {
+            "type" : "string",
+            "description" : "OPTIONAL plaintext public handle/address. Permitted ONLY for inherently-public, pseudonymous factors: SNS handles (`sns-*`) and wallet addresses (`wallet-*`). MUST be ABSENT for every `gov-*` factor (G3 PII-never-plaintext). A verifier rejects a gov claim carrying this field.",
+            "maxLength" : 256
+          }
+        }
+      }
+    }
+  }
+}
